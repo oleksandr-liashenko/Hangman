@@ -61,9 +61,9 @@ def process_try():
     if len(letter) == 1 and letter.isalpha():
         check_letter(letter)
         update_display()
+        show_image(remaining_tries)
         if check_game_over():
-            return  # Exit the function if the game is over
-        show_image(remaining_tries)  # Show the updated hanging man image
+            play_button.configure(state="disabled")
     letter_entry.delete(0, tk.END)
 
 root = tk.Tk()
