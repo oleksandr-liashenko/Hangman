@@ -20,25 +20,20 @@ def display_word():
         if letter in guessed_letters:
             displayed_word += letter
         else:
-            displayed_word += "_"
+            displayed_word += " _ "
     return displayed_word
 
-def show_image(index):
-    global remaining_tries, image_label
+
+def update_display(index):
+    word_label.configure(text=display_word())
+    remaining_label.configure(text=f"Remaining tries: {remaining_tries}")
+    tried_label.configure(text=f"Tried letters: {tried_letters}")
     image_label.config(image=images[index])
 
-def update_display():
-    word_label.configure(text=display_word())
-    display_remaining_tries()
-    show_image(remaining_tries)
-
-def display_remaining_tries():
-    remaining_label.configure(text=f"Remaining tries: {remaining_tries}")
 
 def check_game_over():
     if remaining_tries == 0:
         letter_entry.configure(state="disabled")
-        show_image(0)
         # doesn't work properly without after() method
         root.after(1, lambda: messagebox.showinfo(message=f"You lost! The word was: \n{current_word}"))
         return True
@@ -55,13 +50,14 @@ def check_letter(letter):
         guessed_letters.add(letter)
     else:
         remaining_tries -= 1
+        tried_letters.append(letter)
+
 
 def process_try():
     letter = letter_entry.get()
     if len(letter) == 1 and letter.isalpha():
         check_letter(letter)
-        update_display()
-        show_image(remaining_tries)
+        update_display(remaining_tries)
         if check_game_over():
             play_button.configure(state="disabled")
     letter_entry.delete(0, tk.END)
@@ -82,6 +78,7 @@ images = [
 
 remaining_tries = 6
 guessed_letters = set()
+tried_letters = list()
 current_word = select_word()
 
 play_button = tk.Button(root, text='Try', command=process_try)
@@ -93,9 +90,11 @@ word_label.pack()
 remaining_label = tk.Label(root, text=f"Remaining tries: {remaining_tries}")
 remaining_label.pack()
 
-image_label = tk.Label()
+tried_label = tk.Label(root, text=f"Tried letters: {tried_letters}")
+tried_label.pack()
+
+image_label = tk.Label(image=images[6])
 image_label.pack()
-show_image(remaining_tries)
 
 letter_entry = tk.Entry(root)
 letter_entry.pack()
